@@ -175,6 +175,14 @@ private let exampleStrings: [String: [String: String]] = [
         "errorDecodeImage": "Erreur: impossible de décoder l'image",
         "intro": "Intro",
         "instructions": "Instructions",
+        "amlScreening": "Screening AML / Sanctions",
+        "amlStatus": "Statut",
+        "amlRiskLevel": "Niveau de risque",
+        "amlMatches": "Correspondances",
+        "amlClear": "Aucune correspondance",
+        "amlMatch": "Correspondance trouvée",
+        "amlError": "Erreur de screening",
+        "amlDisabled": "Désactivé",
     ],
     "en": [
         "appTitle": "KyvShield Demo",
@@ -302,6 +310,14 @@ private let exampleStrings: [String: [String: String]] = [
         "errorDecodeImage": "Error: unable to decode image",
         "intro": "Intro",
         "instructions": "Instructions",
+        "amlScreening": "AML / Sanctions Screening",
+        "amlStatus": "Status",
+        "amlRiskLevel": "Risk Level",
+        "amlMatches": "Matches",
+        "amlClear": "No matches found",
+        "amlMatch": "Match found",
+        "amlError": "Screening error",
+        "amlDisabled": "Disabled",
     ],
     "wo": [
         "appTitle": "KyvShield Demo",
@@ -429,6 +445,14 @@ private let exampleStrings: [String: [String: String]] = [
         "errorDecodeImage": "Njumte: mënu ko decode nataal bi",
         "intro": "Intro",
         "instructions": "Ndigal",
+        "amlScreening": "Seet AML / Sanctions",
+        "amlStatus": "Wàllu",
+        "amlRiskLevel": "Tolluwaayu riskk",
+        "amlMatches": "Seetante",
+        "amlClear": "Amul seetante",
+        "amlMatch": "Am na seetante",
+        "amlError": "Njumte ci seet bi",
+        "amlDisabled": "Tëj nañu ko",
     ],
 ]
 
@@ -2022,6 +2046,14 @@ struct ContentView: View {
                     .animation(.easeOut(duration: 0.4).delay(0.4), value: didShowResult)
             }
 
+            // ── AML Screening ─────────────────────────────────────────────────
+            if let aml = result.amlScreening {
+                amlScreeningCard(aml: aml)
+                    .opacity(didShowResult ? 1 : 0)
+                    .offset(y: didShowResult ? 0 : 20)
+                    .animation(.easeOut(duration: 0.4).delay(0.4), value: didShowResult)
+            }
+
             // ── Component scores ─────────────────────────────────────────────
             let rectoScores = result.rectoResult?.fraudAnalysis.componentScores ?? [:]
             let versoScores = result.versoResult?.fraudAnalysis.componentScores ?? [:]
@@ -2515,6 +2547,65 @@ struct ContentView: View {
                 )
             }
         }
+    }
+
+    // MARK: AML Screening card
+
+    private func amlScreeningCard(aml: AMLScreening) -> some View {
+        let isClear = aml.status == "clear"
+        let isMatch = aml.status == "match"
+        let color: Color = isClear ? primaryColor : (isMatch ? .red : .orange)
+        let statusLabel: String = {
+            switch aml.status {
+            case "clear": return t("amlClear")
+            case "match": return t("amlMatch")
+            case "error": return t("amlError")
+            default:      return t("amlDisabled")
+            }
+        }()
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Image(systemName: isClear ? "checkmark.shield" : "exclamationmark.shield")
+                    .foregroundColor(color)
+                    .font(.system(size: 18))
+                Text(t("amlScreening"))
+                    .font(.system(size: 15, weight: .semibold))
+                    .foregroundColor(color)
+                Spacer()
+                Text(aml.status.uppercased())
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundColor(color)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
+                    .background(cardColor)
+                    .clipShape(Capsule())
+                    .overlay(Capsule().stroke(color.opacity(0.3), lineWidth: 1))
+            }
+            HStack {
+                Text(t("amlStatus")).font(.system(size: 13)).foregroundColor(textSecondary)
+                Spacer()
+                Text(statusLabel).font(.system(size: 13, weight: .semibold)).foregroundColor(color)
+            }
+            HStack {
+                Text(t("amlRiskLevel")).font(.system(size: 13)).foregroundColor(textSecondary)
+                Spacer()
+                Text(aml.riskLevel.uppercased()).font(.system(size: 13, weight: .semibold)).foregroundColor(color)
+            }
+            if aml.totalMatches > 0 {
+                HStack {
+                    Text(t("amlMatches")).font(.system(size: 13)).foregroundColor(textSecondary)
+                    Spacer()
+                    Text("\(aml.totalMatches)").font(.system(size: 13, weight: .semibold)).foregroundColor(.red)
+                }
+            }
+        }
+        .padding(16)
+        .background(
+            RoundedRectangle(cornerRadius: 16)
+                .fill(color.opacity(0.05))
+                .overlay(RoundedRectangle(cornerRadius: 16).stroke(color.opacity(0.3), lineWidth: 1))
+        )
     }
 
     // MARK: Processing times card
