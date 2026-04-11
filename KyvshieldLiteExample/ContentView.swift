@@ -69,6 +69,8 @@ private let exampleStrings: [String: [String: String]] = [
         "successPerStepDesc": "Animation de succès après chaque étape",
         "faceMatch": "Face Match",
         "faceMatchDesc": "Comparer le selfie avec la photo du document",
+        "amlScreening": "Screening AML",
+        "amlScreeningDesc": "Vérification des sanctions et listes AML",
         "challengeAudio": "Audio des challenges",
         "challengeAudioDesc": "Jouer les instructions audio pour chaque challenge",
         "language": "Langue",
@@ -204,6 +206,8 @@ private let exampleStrings: [String: [String: String]] = [
         "successPerStepDesc": "Success animation after each step",
         "faceMatch": "Face Match",
         "faceMatchDesc": "Compare selfie with document photo",
+        "amlScreening": "AML Screening",
+        "amlScreeningDesc": "Sanctions & AML watchlist screening",
         "challengeAudio": "Challenge Audio",
         "challengeAudioDesc": "Play audio instructions for each challenge",
         "language": "Language",
@@ -339,6 +343,8 @@ private let exampleStrings: [String: [String: String]] = [
         "successPerStepDesc": "Wone yëgge bu baax",
         "faceMatch": "Seetu kanam",
         "faceMatchDesc": "Seetante selfie ak nataal kaart bi",
+        "amlScreening": "Seetu AML",
+        "amlScreeningDesc": "Seet ci limu sanction yi ak AML",
         "challengeAudio": "Audio jëf yi",
         "challengeAudioDesc": "Déglu ndigal audio yi",
         "language": "Làkk",
@@ -521,6 +527,7 @@ struct ContentView: View {
     @State private var showResultPage       = false
     @State private var showSuccessPerStep   = true
     @State private var requireFaceMatch     = false
+    @State private var requireAml           = false
     @State private var playChallengeAudio   = true
 
     // API options
@@ -829,6 +836,7 @@ struct ContentView: View {
             selfieDisplayMode:   selfieDisplayMode,
             documentDisplayMode: documentDisplayMode,
             requireFaceMatch:    requireFaceMatch,
+            requireAml:          requireAml,
             showIntroPage:       showIntroPage,
             showInstructionPages: showInstructionPages,
             showResultPage:      showResultPage,
@@ -1194,6 +1202,11 @@ struct ContentView: View {
                        subtitle: t("faceMatchDesc"),
                        icon:     "faceid",
                        value:    $requireFaceMatch)
+
+            switchTile(title:    t("amlScreening"),
+                       subtitle: t("amlScreeningDesc"),
+                       icon:     "shield.trianglebadge.exclamationmark",
+                       value:    $requireAml)
 
             switchTile(title:    t("challengeAudio"),
                        subtitle: t("challengeAudioDesc"),
